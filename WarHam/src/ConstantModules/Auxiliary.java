@@ -1,11 +1,22 @@
 
-package warham;
+package ConstantModules;
 
 import acm.graphics.GImage;
+
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+
+import GUIModules.Animation;
+import MapModules.Hexagon;
+import UnitModules.MageUnit;
+import UnitModules.Player;
+import UnitModules.PoisonEffect;
+import UnitModules.Projectile;
+import UnitModules.RangeUnit;
+import UnitModules.Spell;
+import UnitModules.Unit;
 
 
 public class Auxiliary {

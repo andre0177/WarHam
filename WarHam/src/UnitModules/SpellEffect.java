@@ -1,5 +1,5 @@
 
-package warham;
+package UnitModules;
 
 /**
  * Spell Effect Class keep track of the long lasting effects of a spell to a particular unit.

@@ -1,8 +1,14 @@
 
-package warham;
+package MapModules;
 
 import acm.graphics.GImage;
+
 import java.util.ArrayList;
+
+import UnitModules.RangeUnit;
+import UnitModules.Unit;
+import GUIModules.ReportMessage;
+import ConstantModules.DistanceMatrix;
 
 
 public class Hexagon {
@@ -20,7 +26,7 @@ public class Hexagon {
         this.code=code;
         this.i=i;
         this.j=j;
-        core_image=ConstantMapping.getImagefromIntCode(code,map_skin);
+        core_image=ConstantModules.ConstantMapping.getImagefromIntCode(code,map_skin);
         if(code<=10){
             passable=true;
         }else if(code<=20){

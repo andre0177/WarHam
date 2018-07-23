@@ -1,5 +1,5 @@
 
-package warham;
+package MapModules;
 
 
 public class Bonus {

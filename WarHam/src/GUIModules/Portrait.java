@@ -1,5 +1,5 @@
 
-package warham;
+package GUIModules;
 
 import acm.graphics.GImage;
 import acm.graphics.GLabel;

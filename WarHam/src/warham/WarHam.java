@@ -12,6 +12,21 @@ import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.SwingUtilities;
 
+import ConstantModules.Auxiliary;
+import ConstantModules.Config;
+import ConstantModules.DistanceMatrix;
+import GUIModules.Animation;
+import GUIModules.GUILogger;
+import GUIModules.Portrait;
+import GUIModules.ReportMessage;
+import MapModules.Hexagon;
+import UnitModules.MageUnit;
+import UnitModules.Player;
+import UnitModules.Projectile;
+import UnitModules.RangeUnit;
+import UnitModules.Spell;
+import UnitModules.Unit;
+
 public class WarHam extends GraphicsProgram {
 
     private Map map;

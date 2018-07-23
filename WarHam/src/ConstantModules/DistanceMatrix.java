@@ -1,6 +1,7 @@
 
-package warham;
+package ConstantModules;
 
+import MapModules.Hexagon;
 
 public class DistanceMatrix {
     
