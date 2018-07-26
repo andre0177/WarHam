@@ -5,7 +5,7 @@ import GUIModules.Animation;
 
 public class MageUnit  extends Unit{
     
-    private int range,cooldown,counter_cd;
+    private int range,cooldown,counter_cd;//counter_cd=turns that must pass so that he can cast a spell
     private Spell spell;
 
     public MageUnit(int range, int cooldown, Spell spell, String description, String imagepath, int MeeleDmg, int Armor, int MovementSpeed, int morale, int hp, int imgsize, boolean shield, Player Player,Animation anim,int dir) {
@@ -13,7 +13,7 @@ public class MageUnit  extends Unit{
         this.range = range;
         this.cooldown = cooldown;
         this.spell = spell;
-        counter_cd=cooldown;
+        counter_cd=0;
     }
 
     
@@ -27,7 +27,7 @@ public class MageUnit  extends Unit{
     }
     
     public boolean hasMana(){
-        return counter_cd>0;
+        return counter_cd==0;
     }
 
     public int getRange() {
