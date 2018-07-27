@@ -2,7 +2,9 @@
 package UnitModules;
 
 import java.util.Random;
+import acm.graphics.GImage;
 import GUIModules.ReportMessage;
+import GUIModules.Animation;
 
 /**
  *
@@ -14,6 +16,8 @@ public class Spell {
     protected int direct_damage,aoe_area,chain_links,movement_debuff,debuff_turns,dmg_debuff,armor_debuff,range_debuff;
     protected String desc;
     protected PoisonEffect poison;
+    protected GImage projectile_image;
+    protected Animation animation;
 
     public Spell(){
         this.direct_damage = 0;//direct damage if > 0 then it is heal!
@@ -26,7 +30,7 @@ public class Spell {
         this.range_debuff = 0;
     }
     
-    public Spell(int direct_damage, int aoe_damage, int chain_damage, int movement_debuff, int debuff_turns, int dmg_debuff, int armor_debuff, int range_debuff) {
+    public Spell(int direct_damage, int aoe_damage, int chain_damage, int movement_debuff, int debuff_turns, int dmg_debuff, int armor_debuff, int range_debuff,GImage projectile_image) {
         this.direct_damage = direct_damage;
         this.aoe_area = aoe_damage;
         this.chain_links = chain_damage;
@@ -35,6 +39,7 @@ public class Spell {
         this.dmg_debuff = dmg_debuff;
         this.armor_debuff = armor_debuff;
         this.range_debuff = range_debuff;
+        this.projectile_image=projectile_image;
     }
 
     public Spell(int direct_damage, int aoe_area, int chain_links, int movement_debuff, int debuff_turns, int dmg_debuff, int armor_debuff, int range_debuff, String desc, PoisonEffect poison) {
@@ -160,6 +165,22 @@ public class Spell {
         this.range_debuff = range_debuff;
     }
     
+    public GImage getProjectile_image() {
+        return projectile_image;
+    }
+
+    public GImage setProjectile_image(GImage projectile_image) {
+        this.projectile_image = projectile_image;
+    }
     
+    //Animation
     
+    public Animation getAnimation() {
+        return animation;
+    }
+
+    public Animation setAnimation(Animation animation) {
+        this.animation = animation;
+    }
+
 }
