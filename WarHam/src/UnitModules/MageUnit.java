@@ -21,9 +21,15 @@ public class MageUnit  extends Unit{
     public void TurnPassed(){
         if(counter_cd>0) counter_cd--;
     }
-    //must be called every time a spell is cast
-    public void SpellCast(){
-        counter_cd=cooldown;
+    //must be called every time a spell is cast.Return the spell if spell can be cast ,and sets the counter_cd else
+    // retuns null.
+    public Spell SpellCast(){
+        if(hasMana()){
+            counter_cd=cooldown;
+            return spell;
+        }else{
+            return null;
+        }
     }
     
     public boolean hasMana(){
