@@ -169,18 +169,10 @@ public class Spell {
         return projectile_image;
     }
 
-    public GImage setProjectile_image(GImage projectile_image) {
+    public void setProjectile_image(GImage projectile_image) {
         this.projectile_image = projectile_image;
     }
     
-    //Animation
-    
-    public Animation getAnimation() {
-        return animation;
-    }
 
-    public Animation setAnimation(Animation animation) {
-        this.animation = animation;
-    }
 
 }

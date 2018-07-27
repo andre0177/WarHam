@@ -118,8 +118,8 @@ public class WarHam extends GraphicsProgram {
         map=new Map();
         boolean an=map.readMapCSVFile(map_filename);
         DistanceMatrix.setHW(map.getHeight(),map.getWidth());
-        int width=1400;
-        int height=750;
+        int width=1900;
+        int height=1200;
         GImage bck=new GImage("images/background.png");
         bck.setSize(width, 1100);
         add(bck,0,0);
