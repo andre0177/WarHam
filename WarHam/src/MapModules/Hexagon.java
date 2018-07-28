@@ -128,7 +128,6 @@ public class Hexagon {
         }
         return ans;
     }
-
     
     public int getNumberOfAdj(){
         return adjacentHex.size();

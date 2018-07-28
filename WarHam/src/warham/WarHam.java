@@ -19,6 +19,7 @@ import GUIModules.Animation;
 import GUIModules.GUILogger;
 import GUIModules.Portrait;
 import GUIModules.ReportMessage;
+import GUIModules.Spell_Animation;
 import MapModules.Hexagon;
 import UnitModules.MageUnit;
 import UnitModules.Player;
@@ -58,7 +59,7 @@ public class WarHam extends GraphicsProgram {
         while(true){
             Phase(0,"Movement Phase");
             //Phase(2,"Range Phase");//check if anyone has range units
-            //Phase(4,"Mage Phase");//check if anyone has range units
+            Phase(4,"Mage Phase");//check if anyone has range units
             Phase(6,"Meele Phase");
             endOfRoundJobs();
         }
@@ -403,11 +404,12 @@ public class WarHam extends GraphicsProgram {
         	activateAnimation(selectedA,false,direction);
             activateProjectile(p,selectedA,selectedB);//projectile
         }else if(phase==4||phase==5){//magic
+        	activateAnimation(selectedA,false,direction);//unit animation
+        	activateSpellProjectile(p,selectedA,selectedB);//spell animation
             activateSpell(selectedA,selectedB);
         }else if(phase==6||phase==7){//combat
         	print("dir:"+direction);
         	move_unit_to_dir(selectedA, direction,false);
-        	
             activateAnimation(selectedA,true,direction);
             activateMeeleHit(selectedA,selectedB);
             move_unit_to_opposite_dir(selectedA, direction,true);
@@ -709,6 +711,54 @@ public class WarHam extends GraphicsProgram {
         updatePortrait(source,true);
         remove(img);
     }
+    
+    /**
+     * pauses the game.Spawns a projectile (if it is possible) from shooter which is aimed at the target.Animates the projectile 
+     * movement until it hits something.
+     * @param shooter
+     * @param source
+     * @param target 
+     */
+    public void activateSpellProjectile(Player shooter,Hexagon  source,Hexagon target){
+        Spell proj=((MageUnit)(source.getUnit())).getSpell();
+        GImage img=proj.getProjectile_image();
+        int center=map.getHexSize()/4;//why though?
+        double sX=source.getPosX()+center,tX=target.getPosX()+center;
+        double sY=source.getPosY()+center,tY=target.getPosY()+center;
+        img.setSize(proj.getImgsize(),proj.getImgsize());
+        add(img,sX+center,sY+center);//why though?
+        double speed=proj.getSpeed();
+        double diffX=Math.abs(sX-tX);//aux
+        double diffY=Math.abs(tY-sY);//aux
+        double speedX=diffX/(diffX+diffY)*speed;
+        double speedY=diffY/(diffX+diffY)*speed;
+        if(tX<sX) speedX=-1*speedX;
+        if(tY<sY) speedY=-1*speedY;
+        double posX,posY;
+        ArrayList<Hexagon> fmg_dmg_dealt=new ArrayList<>();
+        while(true){
+            img.move(speedX, speedY);
+            pause(Config.time_per_frame);
+            posX=(int)img.getX()+img.getWidth()/2;
+            posY=(int)img.getY()+img.getHeight()/2;
+            Hexagon hex=getClickedHex((int)posX,(int)posY);
+            if(hex==null){//does not mean it is out of bounds because there are spaces between the hexagons
+            	if(out_of_bounds(img)) {
+            		print("Warham:activateProjectile: Projectile got out of bounds");
+            		break;
+            	}
+            }else if(hex.isWall()){
+                print("Warham:activateProjectile: Projectile hit a Wall(Trump Intensifies)");
+                break;
+            }else if(hex.hasUnit()&&hex!=source&&!fmg_dmg_dealt.contains(hex)){//friendly fire?
+                print("Warham:activateProjectile: Projectile hit something");
+                activateAnimation(target,proj);
+                break;//no fmg
+            }
+        }
+        updatePortrait(source,true);
+        remove(img);
+    }
 
     public void keyPressed(KeyEvent e) {
     	Player p;
@@ -980,60 +1030,65 @@ public class WarHam extends GraphicsProgram {
     
     public void activateSpell(Hexagon source,Hexagon target){
         MageUnit mag=(MageUnit)source.getUnit();
-        mag.SpellCast();
-        int area=mag.getSpell().getAoeArea();
-        if(target.hasUnit()){
-            Spell spl=mag.getSpell();
-            ReportMessage rpt=spl.activateSpellEffect(target.getUnit());
-            addToLogger(rpt.getMessage());
-            takeDamage(rpt.getValue(),target);
-        }
-        if(area>0){
-            if(area>=1){
-                for(Hexagon hex:target.getAdjacentHexList()){
-                    if(hex.hasUnit()){
-                        Spell spl=mag.getSpell();
-                        ReportMessage rpt=spl.activateSpellEffect(hex.getUnit());
-                        takeDamage(rpt.getValue(),target);
+        Spell spell=mag.SpellCast();
+        if(spell==null) {
+        	
+        	return;
+        }else {
+        	int area=mag.getSpell().getAoeArea();
+            if(target.hasUnit()){
+                ReportMessage rpt=spell.activateSpellEffect(target.getUnit());
+                addToLogger(rpt.getMessage());
+                takeDamage(rpt.getValue(),target);
+            }
+            if(area>0){
+                if(area>=1){
+                    for(Hexagon hex:target.getAdjacentHexList()){
+                        if(hex.hasUnit()){
+                            Spell spl=mag.getSpell();
+                            ReportMessage rpt=spl.activateSpellEffect(hex.getUnit());
+                            takeDamage(rpt.getValue(),target);
+                        }
                     }
                 }
-            }
-            if(area==2){
-                for(Hexagon hex:target.getAdjacentHexList()){
-                    for(Hexagon hexInside:hex.getAdjacentHexList()){
-                        if(!hexInside.isAdjacenthex(target)&&hexInside.hasUnit()){
-                            Spell spl=mag.getSpell();
-                            ReportMessage rpt=spl.activateSpellEffect(hexInside.getUnit());
-                            takeDamage(rpt.getValue(),target);
+                if(area==2){
+                    for(Hexagon hex:target.getAdjacentHexList()){
+                        for(Hexagon hexInside:hex.getAdjacentHexList()){
+                            if(!hexInside.isAdjacenthex(target)&&hexInside.hasUnit()){
+                                Spell spl=mag.getSpell();
+                                ReportMessage rpt=spl.activateSpellEffect(hexInside.getUnit());
+                                takeDamage(rpt.getValue(),target);
+                            }
                         }
                     }
                 }
             }
         }
     }
-    
+
     public void takeDamage(int dmg,Hexagon h){
         if(dmg==0) {
         	show_dmg_label(dmg,h);
         	return;
-        }
-        animation_hit_impact(h,map.getDirectionFromTo(selectedA,selectedB),false);//animation of the hit impact
-        show_dmg_label(dmg,h);//animation dmg label
-        Unit target=h.getUnit();
-        int hp=target.getHp();
-        hp=hp-dmg;
-        target.setHp(hp);
-        Player p=target.getPlayer();
-        if(hp<=0){
-            p.removeUnit(target);
-            remove(target.getImage());
-            h.UnitLeft();
-            add(target.getAnimation().getDeadImg(),h.getPosX(),h.getPosY());
-            addToLogger(target.getDescription()+" has been killed.");
-            clearPortrait(false);//clear right portrait
-        }else{
-            addToLogger(target.getDescription()+" has taken "+dmg+" damage.");
-            updatePortrait(h,false);//update right portrait
+        }else {
+        	animation_hit_impact(h,map.getDirectionFromTo(selectedA,selectedB),false);//animation of the hit impact
+            show_dmg_label(dmg,h);//animation dmg label
+            Unit target=h.getUnit();
+            int hp=target.getHp();
+            hp=hp-dmg;
+            target.setHp(hp);
+            Player p=target.getPlayer();
+            if(hp<=0){
+                p.removeUnit(target);
+                remove(target.getImage());
+                h.UnitLeft();
+                add(target.getAnimation().getDeadImg(),h.getPosX(),h.getPosY());
+                addToLogger(target.getDescription()+" has been killed.");
+                clearPortrait(false);//clear right portrait
+            }else{
+                addToLogger(target.getDescription()+" has taken "+dmg+" damage.");
+                updatePortrait(h,false);//update right portrait
+            }
         }
     }
     /**
@@ -1111,14 +1166,13 @@ public class WarHam extends GraphicsProgram {
     }
     
     /**
-     * Activates the animation based on direction ,and based on the type of phase it is(meele or ranged)-->(Mage casting spell is considered range)
+     * Activates the unit animation based on direction ,and based on the type of phase it is(meele or ranged)-->(Mage casting spell is considered range)
      * must be cast when request for action is true.
      */
     public void activateAnimation(Hexagon hex,boolean meele,int direction){
         if(direction>3||direction<0||hex.hasUnit()==false||hex==null){
             print("WarHam:activateAnimation: grave Error");
         }
-        boolean over=false;
         Unit u=hex.getUnit();
         Animation anim=u.getAnimation();
         int frames=anim.getFramesPerMeeleAttack();
@@ -1132,6 +1186,7 @@ public class WarHam extends GraphicsProgram {
         for(int i=0;i<frames;i++){
             if(frame!=null) remove(frame);
             frame=anim.getNextAnimationFrame(meele, direction, i);
+            if(frame==null) break;
             add(frame,x,y);
             pause(Config.time_per_frame);
         }
@@ -1139,6 +1194,30 @@ public class WarHam extends GraphicsProgram {
         temp=anim.getDefaultFrame(direction);
         u.setImage(temp);
         add(temp,x,y);
+    }
+    
+    /**
+     * Activates the spell animation at the inserted hexagon.
+     */
+    public void activateAnimation(Hexagon target,Spell spell){
+
+        Spell_Animation anim=spell.getAnimation();
+        int frames=anim.getFrames();
+
+        double x=target.getPosX();
+        double y=target.getPosY();
+        
+        GImage frame=null;
+        
+        for(int i=0;i<frames;i++){
+            if(frame!=null) remove(frame);
+            frame=anim.getAnimationFrame(i);
+            if(frame==null) break;
+            add(frame,x,y);
+            pause(Config.time_per_frame);
+        }
+        if(frame!=null) remove(frame);
+        
     }
     
     

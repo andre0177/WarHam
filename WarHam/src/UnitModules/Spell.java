@@ -4,6 +4,7 @@ package UnitModules;
 import java.util.Random;
 import acm.graphics.GImage;
 import GUIModules.ReportMessage;
+import GUIModules.Spell_Animation;
 import GUIModules.Animation;
 
 /**
@@ -13,11 +14,11 @@ import GUIModules.Animation;
 public class Spell {
     
     
-    protected int direct_damage,aoe_area,chain_links,movement_debuff,debuff_turns,dmg_debuff,armor_debuff,range_debuff;
+    protected int direct_damage,aoe_area,chain_links,movement_debuff,debuff_turns,dmg_debuff,armor_debuff,range_debuff,speed=5,imgsize;
     protected String desc;
     protected PoisonEffect poison;
     protected GImage projectile_image;
-    protected Animation animation;
+    protected Spell_Animation animation;
 
     public Spell(){
         this.direct_damage = 0;//direct damage if > 0 then it is heal!
@@ -30,7 +31,7 @@ public class Spell {
         this.range_debuff = 0;
     }
     
-    public Spell(int direct_damage, int aoe_damage, int chain_damage, int movement_debuff, int debuff_turns, int dmg_debuff, int armor_debuff, int range_debuff,GImage projectile_image) {
+    public Spell(int direct_damage, int aoe_damage, int chain_damage, int movement_debuff, int debuff_turns, int dmg_debuff, int armor_debuff, int range_debuff,GImage projectile_image,int imgsize) {
         this.direct_damage = direct_damage;
         this.aoe_area = aoe_damage;
         this.chain_links = chain_damage;
@@ -40,6 +41,7 @@ public class Spell {
         this.armor_debuff = armor_debuff;
         this.range_debuff = range_debuff;
         this.projectile_image=projectile_image;
+        this.imgsize=imgsize;
     }
 
     public Spell(int direct_damage, int aoe_area, int chain_links, int movement_debuff, int debuff_turns, int dmg_debuff, int armor_debuff, int range_debuff, String desc, PoisonEffect poison) {
@@ -101,11 +103,67 @@ public class Spell {
         return true;
     }
     
-    public int getDirect_damage() {
+    public int getImgsize() {
+		return imgsize;
+	}
+
+	public void setImgsize(int imgsize) {
+		this.imgsize = imgsize;
+	}
+
+	public int getDirect_damage() {
         return direct_damage;
     }
 
-    public void setDirect_damage(int direct_damage) {
+    public int getAoe_area() {
+		return aoe_area;
+	}
+
+	public Spell_Animation getAnimation() {
+		return animation;
+	}
+
+	public void setAnimation(Spell_Animation animation) {
+		this.animation = animation;
+	}
+
+	public void setAoe_area(int aoe_area) {
+		this.aoe_area = aoe_area;
+	}
+
+	public int getChain_links() {
+		return chain_links;
+	}
+
+	public void setChain_links(int chain_links) {
+		this.chain_links = chain_links;
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public PoisonEffect getPoison() {
+		return poison;
+	}
+
+	public void setPoison(PoisonEffect poison) {
+		this.poison = poison;
+	}
+
+	public void setDirect_damage(int direct_damage) {
         this.direct_damage = direct_damage;
     }
 
