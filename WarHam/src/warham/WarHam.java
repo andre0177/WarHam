@@ -714,12 +714,12 @@ public class WarHam extends GraphicsProgram {
     
     /**
      * pauses the game.Spawns a projectile (if it is possible) from shooter which is aimed at the target.Animates the projectile 
-     * movement until it hits something.
+     * movement until it hits something.Returns the Hexagon that the spell hit,if null it hit nothing.
      * @param shooter
      * @param source
      * @param target 
      */
-    public void activateSpellProjectile(Player shooter,Hexagon  source,Hexagon target){
+    public Hexagon activateSpellProjectile(Player shooter,Hexagon  source,Hexagon target){
         Spell proj=((MageUnit)(source.getUnit())).getSpell();
         GImage img=proj.getProjectile_image();
         int center=map.getHexSize()/4;//why though?
@@ -735,29 +735,28 @@ public class WarHam extends GraphicsProgram {
         if(tX<sX) speedX=-1*speedX;
         if(tY<sY) speedY=-1*speedY;
         double posX,posY;
+	Hexagon hex=null;
         ArrayList<Hexagon> fmg_dmg_dealt=new ArrayList<>();
         while(true){
             img.move(speedX, speedY);
             pause(Config.time_per_frame);
             posX=(int)img.getX()+img.getWidth()/2;
             posY=(int)img.getY()+img.getHeight()/2;
-            Hexagon hex=getClickedHex((int)posX,(int)posY);
+            hex=getClickedHex((int)posX,(int)posY);
             if(hex==null){//does not mean it is out of bounds because there are spaces between the hexagons
             	if(out_of_bounds(img)) {
-            		print("Warham:activateProjectile: Projectile got out of bounds");
+            		print("Warham:activateSpellProjectile: Projectile got out of bounds");
             		break;
             	}
-            }else if(hex.isWall()){
-                print("Warham:activateProjectile: Projectile hit a Wall(Trump Intensifies)");
-                break;
-            }else if(hex.hasUnit()&&hex!=source&&!fmg_dmg_dealt.contains(hex)){//friendly fire?
-                print("Warham:activateProjectile: Projectile hit something");
-                activateAnimation(target,proj);
+            }else if(((hex.hasUnit()||(hex.isWall())&&!proj.isEtheral())||hex==target)&&hex!=source&&!fmg_dmg_dealt.contains(hex)){//friendly fire?
+                print("Warham:activateSpellProjectile: Projectile hit something");
+                activateAnimation(hex,proj);
                 break;//no fmg
             }
         }
         updatePortrait(source,true);
         remove(img);
+        return hex;
     }
 
     public void keyPressed(KeyEvent e) {
